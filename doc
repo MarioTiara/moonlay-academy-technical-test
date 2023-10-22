@@ -1,0 +1,13 @@
+task github:
+    https://github.com/moonlay-technologies/moonlay-academy-technical-test/tree/be-golang
+
+table scheme:
+    https://dbdiagram.io/d/ToDo-List-App-6520d21dffbf5169f036764d
+
+
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'todolistwebapi'
+  AND pid <> pg_backend_pid();
+ pg_terminate_backend
+
