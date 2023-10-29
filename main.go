@@ -25,4 +25,12 @@ func main() {
 
 	fmt.Println(priority)
 
+	task := models.Task{ID: 1}
+	db.First(&task)
+	fmt.Println(task)
+
+	file := models.Files{ID: 1}
+	db.First(&file)
+	fmt.Println(file)
+
 }

@@ -3,8 +3,8 @@ CREATE TABLE "tasks" (
     "id" SERIAL PRIMARY KEY,
     "title" VARCHAR (100) NOT NULL,
     "descryption" VARCHAR (256),
-    "create_at" timestamp,
-    "update_at" timestamp,
+    "created_at" timestamp,
+    "updated_at" timestamp,
     "is_finished" boolean,
 
     "parents_id" integer,
