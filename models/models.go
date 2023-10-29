@@ -1,34 +1,21 @@
 package models
 
-import (
-	"time"
-)
+import "gorm.io/gorm"
 
-type Task struct {
-	ID          int
-	Title       string
-	Descryption string
-	CreatedAt   time.Time
-	UpdatdAt    time.Time
-	IsFinished  bool
-	ParentsID   int
-
-	PriorityID int
-	Priority   Priority
-
-	Files []Files
+type User struct {
+	gorm.Model
+	Name string
+	Pets []Pet
 }
 
-type Priority struct {
-	ID       int
-	Priority string
-	Tasks    []Task
+type Pet struct {
+	gorm.Model
+	Name   string
+	User   User
+	UserID uint
 }
 
-type Files struct {
-	ID        int
-	Extension string
-	Filename  string
-
-	TaskID int
+type Employee struct {
+	Id   int
+	Name string
 }
