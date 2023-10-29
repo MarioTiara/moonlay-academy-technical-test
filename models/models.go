@@ -1,56 +1,34 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type Task struct {
-	*gorm.Model
-	Titile      string
+	ID          int
+	Title       string
 	Descryption string
+	CreatedAt   time.Time
+	UpdatdAt    time.Time
 	IsFinished  bool
+	ParentsID   int
 
 	PriorityID int
 	Priority   Priority
 
-	Files []File
+	Files []Files
 }
 
 type Priority struct {
-	*gorm.Model
-	Priority_name string
-
-	Tasks []Task
+	ID       int
+	Priority string
+	Tasks    []Task
 }
 
-type File struct {
-	*gorm.Model
+type Files struct {
+	ID        int
 	Extension string
 	Filename  string
 
 	TaskID int
-	Task   Task
 }
-
-// type Users struct {
-// 	Id       int
-// 	Name     string
-// 	Username string
-// }
-
-// type User struct {
-// 	gorm.Model
-// 	Name      string
-// 	CompanyID int
-// 	Company   Company
-// }
-
-// type Company struct {
-// 	ID        int
-// 	Name      string
-// 	CountryID int
-// 	Country   Country
-// }
-
-// type Country struct {
-// 	ID   int
-// 	Name string
-// }

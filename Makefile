@@ -4,7 +4,7 @@ createdb:
 dropdb:
 	docker exec -it postgres12 dropdb todolistwebapi
 
-create-migrtion:
+create-migration:
 	migrate create -ext sql -dir database/migrations -seq todolist_schema
 
 migrateup:

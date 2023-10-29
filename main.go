@@ -10,20 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Define the models to generate migrations for.
-var model = []any{
-	// &models.Task{},
-	// &models.Priority{},
-	// &models.File{},
-}
-
 func main() {
-	// stmts, err := gormschema.New("postgres").Load(model...)
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "failed to load gorm schema: %v\n", err)
-	// 	os.Exit(1)
-	// }
-	// io.WriteString(os.Stdout, stmts)
 
 	dsn := "host=localhost user=root password=secret dbname=todolistwebapi port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -32,10 +19,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	user := models.Task{Titile: "task1"}
+	priority := models.Priority{ID: 1}
 
-	db.First(&user)
+	db.First(&priority)
 
-	fmt.Println(user)
+	fmt.Println(priority)
 
 }
