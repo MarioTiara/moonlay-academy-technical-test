@@ -14,8 +14,8 @@ type Task struct {
 	ParentsID   int       `gorm:"column:parents_id"`
 
 	PriorityID int `gorm:"column:priority_id"`
-
-	Files []Files
+	Priority   Priority
+	Files      []Files
 }
 
 type Priority struct {
