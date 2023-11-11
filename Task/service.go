@@ -5,7 +5,7 @@ import "time"
 type Service interface {
 	FindAll() ([]Task, error)
 	FindByID(ID int) (Task, error)
-	Create(task Task) (Task, error)
+	Create(request AddTaskRequest) (Task, error)
 }
 
 type service struct {
