@@ -32,10 +32,7 @@ func (s *service) Create(request AddTaskRequest) (Task, error) {
 		Title:       request.Title,
 		Descryption: request.Descryption,
 		CreatedAt:   datetime,
-		UpdatedAt:   datetime,
-		IsFinished:  false,
 		ParentsID:   request.ParentID,
-		PriorityID:  request.PriorityID,
 	}
 
 	task, err := s.repository.Create(newTask)
