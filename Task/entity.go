@@ -3,11 +3,11 @@ package task
 import "time"
 
 type Task struct {
-	ID          int       `gorm:"column:id"`
+	ID          int       `gorm:"column:task_id"`
 	Title       string    `gorm:"column:title"`
 	Descryption string    `gorm:"column:descryption"`
 	CreatedAt   time.Time `gorm:"column:created_at"`
-	ParentsID   int       `gorm:"column:parents_task_id"`
+	ParentsID   int       `gorm:"column:parent_task_id"`
 }
 
 type Files struct {

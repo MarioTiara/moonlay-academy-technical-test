@@ -28,11 +28,12 @@ func (s *service) FindByID(ID int) (Task, error) {
 
 func (s *service) Create(request AddTaskRequest) (Task, error) {
 	datetime := time.Now()
+
 	newTask := Task{
 		Title:       request.Title,
 		Descryption: request.Descryption,
 		CreatedAt:   datetime,
-		ParentsID:   request.ParentID,
+		ParentsID:   1,
 	}
 
 	task, err := s.repository.Create(newTask)
