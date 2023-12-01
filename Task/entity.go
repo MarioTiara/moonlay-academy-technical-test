@@ -3,15 +3,19 @@ package task
 import "time"
 
 type Task struct {
-	ID          int       `gorm:"column:task_id"`
+	ID          uint      `gorm:"column:id"`
 	Title       string    `gorm:"column:title"`
-	Descryption string    `gorm:"column:descryption"`
+	Descryption string    `gorm:"column:description"`
 	CreatedAt   time.Time `gorm:"column:created_at"`
-	ParentsID   int       `gorm:"column:parent_task_id"`
+	UpdatedAt   time.Time `gorm:"column:updated_at"`
+	ParentID    *uint
+	Children    []Task  `gorm:"foreignKey:ParentID"`
+	Files       []Files `gorm:"foreignKey:TaskID"`
 }
 
 type Files struct {
-	ID       int    `gorm:"column:file_id"`
+	ID       int    `gorm:"column:id"`
 	FileName string `gorm:"file_name"`
+	FilePath string `gorm:"file_path"`
 	TaskID   int    `gorm:"task_id"`
 }

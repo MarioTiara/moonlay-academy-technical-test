@@ -4,7 +4,7 @@ import "time"
 
 type Service interface {
 	FindAll() ([]Task, error)
-	FindByID(ID int) (Task, error)
+	FindByID(ID uint) []Task
 	Create(request AddTaskRequest) (Task, error)
 }
 
@@ -21,19 +21,30 @@ func (s *service) FindAll() ([]Task, error) {
 	return tasks, err
 }
 
-func (s *service) FindByID(ID int) (Task, error) {
-	task, err := s.repository.FindByID(ID)
-	return task, err
+func (s *service) FindByID(ID uint) []Task {
+	task := s.repository.FindByID(ID)
+	return task
 }
 
 func (s *service) Create(request AddTaskRequest) (Task, error) {
 	datetime := time.Now()
+	var newTask = Task{}
+	if request.ParentID <= 0 {
 
-	newTask := Task{
-		Title:       request.Title,
-		Descryption: request.Descryption,
-		CreatedAt:   datetime,
-		ParentsID:   1,
+		newTask = Task{
+			Title:       request.Title,
+			Descryption: request.Descryption,
+			CreatedAt:   datetime,
+		}
+
+	} else {
+		var parentID = uint(request.ParentID)
+		newTask = Task{
+			Title:       request.Title,
+			Descryption: request.Descryption,
+			CreatedAt:   datetime,
+			ParentID:    &parentID,
+		}
 	}
 
 	task, err := s.repository.Create(newTask)

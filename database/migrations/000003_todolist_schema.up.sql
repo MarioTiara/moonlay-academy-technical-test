@@ -1,4 +1,0 @@
-
-
-ALTER TABLE task
-ADD COLUMN task_status VARCHAR(100) NOT NULL;

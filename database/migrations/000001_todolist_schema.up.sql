@@ -1,12 +1,17 @@
 CREATE TABLE tasks (
-    task_id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    descryption VARCHAR(100) NOT NULL,
-    parent_task_id INT REFERENCES tasks(task_id) ON DELETE CASCADE
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    parent_id INT,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now(),
+    FOREIGN KEY (parent_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
 CREATE TABLE files (
-    file_id SERIAL PRIMARY KEY,
-    file_name VARCHAR(255) NOT NULL,
-    task_id INT REFERENCES tasks(task_id) ON DELETE CASCADE
+    id SERIAL PRIMARY KEY,
+    task_id INT,
+    filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );

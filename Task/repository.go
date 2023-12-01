@@ -6,7 +6,7 @@ import (
 
 type Repository interface {
 	FindAll() ([]Task, error)
-	FindByID(ID int) (Task, error)
+	FindByID(ID uint) []Task
 	Create(task Task) (Task, error)
 	//Pagination(pagination *dtos.Pagination) (dtos.Pagination, int)
 }
@@ -26,16 +26,35 @@ func (r *repository) FindAll() ([]Task, error) {
 	return tasks, err
 }
 
-func (r *repository) FindByID(ID int) (Task, error) {
+func (r *repository) FindByID(ID uint) []Task {
+	var tasks []Task
+	//getTaskWithChildren(r.db, nil, &tasks)
 	var task Task
-	err := r.db.Find(&task).Error
-	return task, err
+	r.db.First(&task, 1)
+	tasks = append(tasks, task)
+	return tasks
+
 }
 
 func (r *repository) Create(task Task) (Task, error) {
-	err := r.db.Create(&task).Error
+	parentTask := Task{Title: "Parent Task 2", Descryption: "this is parent task"}
+	childTask := Task{Title: "Child Task 1", Descryption: "this is parent children"}
+	childTask2 := Task{Title: "Child Task 2", Descryption: "this is parent children"}
+	parentTask.Children = append(parentTask.Children, childTask, childTask2)
+	err := r.db.Create(&parentTask).Error
 
-	return task, err
+	return parentTask, err
+}
+
+func getTaskWithChildren(db *gorm.DB, parentID *uint, tasks *[]Task) {
+	var children []Task
+
+	query := db.Where("parent_task_id = ?", parentID).Find(&children)
+	*tasks = append(*tasks, children...)
+
+	for _, child := range children {
+		getTaskWithChildren(query, &child.ID, tasks)
+	}
 }
 
 // func (r *repository) Pagination(pagination *dtos.Pagination) (interface{}, int) {
