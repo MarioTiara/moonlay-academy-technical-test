@@ -104,3 +104,46 @@ func (h *taskHandler) FilterTaskHandler(c *gin.Context) {
 		"data": tasks,
 	})
 }
+
+func (h *taskHandler) PostSubTaskByID(c *gin.Context) {
+
+	var subTaskRequest task.AddTaskRequest
+	err := c.ShouldBindJSON(&subTaskRequest)
+
+	StrID := c.Param("id")
+	id, err := strconv.ParseUint(StrID, 10, 64)
+
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+
+		return
+	}
+
+	task, err := h.taskService.CreateSubTask(uint(id), subTaskRequest)
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": task,
+	})
+
+}

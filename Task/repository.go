@@ -8,6 +8,7 @@ type Repository interface {
 	FindAll() ([]Task, error)
 	FindByID(ID uint) (Task, error)
 	Create(task Task) (Task, error)
+	CreateSubTask(task Task) (Task, error)
 	FilterByTitleAndDescription(title, description string, page, limit int) ([]Task, error)
 	//Pagination(pagination *dtos.Pagination) (dtos.Pagination, int)
 }
@@ -56,4 +57,9 @@ func (r *repository) FilterByTitleAndDescription(title, description string, page
 	}
 
 	return tasks, nil
+}
+
+func (r *repository) CreateSubTask(task Task) (Task, error) {
+	err := r.db.Create(&task).Error
+	return task, err
 }

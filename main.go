@@ -30,6 +30,7 @@ func main() {
 	v1.GET("/", handlers.RootHandler)
 	v1.POST("/tasks", taskHandler.PostTasksHandler)
 	v1.GET("/tasks/:id", taskHandler.GetTaskByIDHandler)
+	v1.POST("/tasks/:id", taskHandler.PostSubTaskByID)
 	v1.GET("tasks/filter", taskHandler.FilterTaskHandler)
 
 	router.Run()

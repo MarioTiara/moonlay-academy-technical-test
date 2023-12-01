@@ -3,6 +3,7 @@ package task
 type Service interface {
 	FindAll() ([]Task, error)
 	FindByID(ID uint) (Task, error)
+	CreateSubTask(parentID uint, request AddTaskRequest) (Task, error)
 	Create(request AddTaskRequest) (Task, error)
 	FilterTask(title, description string, page, limit int) ([]Task, error)
 }
@@ -35,6 +36,11 @@ func (s *service) Create(request AddTaskRequest) (Task, error) {
 
 	task, err := s.repository.Create(parentTask)
 	return task, err
+}
+
+func (s *service) CreateSubTask(parentID uint, request AddTaskRequest) (Task, error) {
+	var subTask = Task{Title: request.Title, Descryption: request.Descryption, ParentID: &parentID}
+	return s.repository.CreateSubTask(subTask)
 }
 
 func (s *service) FilterTask(title, description string, page, limit int) ([]Task, error) {
