@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	task "github.com/marioTiara/todolistwebapi/Task"
+	"github.com/marioTiara/todolistwebapi/helpers"
 )
 
 type taskHandler struct {
@@ -84,4 +85,22 @@ func (h *taskHandler) GetTaskByIDHandler(c *gin.Context) {
 		"data": task,
 	})
 
+}
+
+func (h *taskHandler) FilterTaskHandler(c *gin.Context) {
+	title := c.Query("title")
+	description := c.Query("description")
+	page, limit := helpers.GetPageAndLimit(c)
+
+	tasks, err := h.taskService.FilterTask(title, description, page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to filter tasks",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": tasks,
+	})
 }

@@ -8,6 +8,7 @@ type Repository interface {
 	FindAll() ([]Task, error)
 	FindByID(ID uint) (Task, error)
 	Create(task Task) (Task, error)
+	FilterByTitleAndDescription(title, description string, page, limit int) ([]Task, error)
 	//Pagination(pagination *dtos.Pagination) (dtos.Pagination, int)
 }
 
@@ -38,50 +39,21 @@ func (r *repository) Create(task Task) (Task, error) {
 	return task, err
 }
 
-func getTaskWithChildren(db *gorm.DB, parentID *uint, tasks *[]Task) {
-	var children []Task
+func (r *repository) FilterByTitleAndDescription(title, description string, page, limit int) ([]Task, error) {
+	var tasks []Task
+	query := r.db.Model(&Task{})
 
-	query := db.Where("parent_task_id = ?", parentID).Find(&children)
-	*tasks = append(*tasks, children...)
-
-	for _, child := range children {
-		getTaskWithChildren(query, &child.ID, tasks)
+	if title != "" {
+		query = query.Where("title LIKE ?", "%"+title+"%")
 	}
+	if description != "" {
+		query = query.Where("description LIKE ?", "%"+description+"%")
+	}
+
+	offset := (page - 1) * limit
+	if err := query.Preload("Children").Offset(offset).Limit(limit).Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }
-
-// func (r *repository) Pagination(pagination *dtos.Pagination) (interface{}, int) {
-// 	// var tasks Task
-
-// 	// totalRows, totalPages, fromRow, toRow := 0, 0, 0, 0
-
-// 	offset := pagination.Page * pagination.Limit
-
-// 	//get data with limit, offest &order
-// 	find := r.db.Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-
-// 	//generte where query
-// 	searchs := pagination.Searchs
-
-// 	if searchs != nil {
-// 		for _, value := range searchs {
-// 			column := value.Column
-// 			action := value.Action
-// 			query := value.Query
-
-// 			switch action {
-// 			case "equals":
-// 				whereQuery := fmt.Sprintf("%s = ?", column)
-// 				find = find.Where(whereQuery, query)
-// 				break
-// 			case "contains":
-// 				whereQuery := fmt.Sprintf("%s LIKE ?", column)
-// 				find = find.Where(whereQuery, "%"+query+"%")
-// 				break
-// 			case "in":
-
-// 			}
-
-// 		}
-// 	}
-
-// }

@@ -4,6 +4,7 @@ type Service interface {
 	FindAll() ([]Task, error)
 	FindByID(ID uint) (Task, error)
 	Create(request AddTaskRequest) (Task, error)
+	FilterTask(title, description string, page, limit int) ([]Task, error)
 }
 
 type service struct {
@@ -34,6 +35,10 @@ func (s *service) Create(request AddTaskRequest) (Task, error) {
 
 	task, err := s.repository.Create(parentTask)
 	return task, err
+}
+
+func (s *service) FilterTask(title, description string, page, limit int) ([]Task, error) {
+	return s.repository.FilterByTitleAndDescription(title, description, page, limit)
 }
 
 func convertRequestToTaskEntity(request AddTaskRequest) Task {

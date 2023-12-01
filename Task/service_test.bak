@@ -1,0 +1,51 @@
+package task
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+)
+
+type MockTaskRepository struct {
+	mock.Mock
+}
+
+func (m *MockTaskRepository) FindAll() ([]Task, error) {
+	args := m.Called()
+	return args.Get(0).([]Task), args.Error(1)
+}
+
+func (m *MockTaskRepository) FindByID(ID uint) (Task, error) {
+	args := m.Called()
+	return args.Get(0).(Task), args.Error(1)
+}
+
+func (m *MockTaskRepository) Create(tak Task) (Task, error) {
+	args := m.Called()
+
+	return args.Get(0).(Task), args.Error(1)
+}
+
+func TestNewService(t *testing.T) {
+	//Arrange
+	mockRepo := new(MockTaskRepository)
+
+	//Act
+	service := NewService(mockRepo)
+
+	//Assert
+	assert.NotNil(t, service)
+	assert.NotNil(t, service.repository)
+}
+
+func Test_new_service_find_all_method(t *testing.T) {
+	mockRepo := new(MockTaskRepository)
+
+	service := NewService(mockRepo)
+
+	tasks, err := service.FindAll()
+
+	assert.NotNil(t, tasks)
+	assert.Nil(t, err)
+}
