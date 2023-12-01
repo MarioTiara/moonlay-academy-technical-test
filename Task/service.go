@@ -1,7 +1,5 @@
 package task
 
-import "time"
-
 type Service interface {
 	FindAll() ([]Task, error)
 	FindByID(ID uint) []Task
@@ -27,26 +25,18 @@ func (s *service) FindByID(ID uint) []Task {
 }
 
 func (s *service) Create(request AddTaskRequest) (Task, error) {
-	datetime := time.Now()
-	var newTask = Task{}
-	if request.ParentID <= 0 {
+	//datetime := time.Now()
 
-		newTask = Task{
-			Title:       request.Title,
-			Descryption: request.Descryption,
-			CreatedAt:   datetime,
-		}
-
-	} else {
-		var parentID = uint(request.ParentID)
-		newTask = Task{
-			Title:       request.Title,
-			Descryption: request.Descryption,
-			CreatedAt:   datetime,
-			ParentID:    &parentID,
-		}
+	var parentTask = convertRequestToTaskEntity(request)
+	for _, task := range request.Children {
+		parentTask.Children = append(parentTask.Children, convertRequestToTaskEntity(task))
 	}
 
-	task, err := s.repository.Create(newTask)
+	task, err := s.repository.Create(parentTask)
 	return task, err
+}
+
+func convertRequestToTaskEntity(request AddTaskRequest) Task {
+	newtask := Task{Title: request.Title, Descryption: request.Descryption}
+	return newtask
 }

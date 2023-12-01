@@ -37,13 +37,8 @@ func (r *repository) FindByID(ID uint) []Task {
 }
 
 func (r *repository) Create(task Task) (Task, error) {
-	parentTask := Task{Title: "Parent Task 2", Descryption: "this is parent task"}
-	childTask := Task{Title: "Child Task 1", Descryption: "this is parent children"}
-	childTask2 := Task{Title: "Child Task 2", Descryption: "this is parent children"}
-	parentTask.Children = append(parentTask.Children, childTask, childTask2)
-	err := r.db.Create(&parentTask).Error
-
-	return parentTask, err
+	err := r.db.Create(&task).Error
+	return task, err
 }
 
 func getTaskWithChildren(db *gorm.DB, parentID *uint, tasks *[]Task) {
