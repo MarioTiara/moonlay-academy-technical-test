@@ -2,7 +2,7 @@ package task
 
 type Service interface {
 	FindAll() ([]Task, error)
-	FindByID(ID uint) []Task
+	FindByID(ID uint) (Task, error)
 	Create(request AddTaskRequest) (Task, error)
 }
 
@@ -19,9 +19,9 @@ func (s *service) FindAll() ([]Task, error) {
 	return tasks, err
 }
 
-func (s *service) FindByID(ID uint) []Task {
-	task := s.repository.FindByID(ID)
-	return task
+func (s *service) FindByID(ID uint) (Task, error) {
+	task, err := s.repository.FindByID(ID)
+	return task, err
 }
 
 func (s *service) Create(request AddTaskRequest) (Task, error) {

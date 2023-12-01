@@ -65,13 +65,23 @@ func (h *taskHandler) GetTaskByIDHandler(c *gin.Context) {
 		})
 	}
 
-	tasks := h.taskService.FindByID(uint(id))
-	if len(tasks) <= 0 {
-		c.JSON(http.StatusNoContent, gin.H{})
+	task, err := h.taskService.FindByID(uint(id))
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": tasks,
+		"data": task,
 	})
 
 }

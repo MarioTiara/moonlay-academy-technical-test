@@ -6,7 +6,7 @@ import (
 
 type Repository interface {
 	FindAll() ([]Task, error)
-	FindByID(ID uint) []Task
+	FindByID(ID uint) (Task, error)
 	Create(task Task) (Task, error)
 	//Pagination(pagination *dtos.Pagination) (dtos.Pagination, int)
 }
@@ -26,14 +26,11 @@ func (r *repository) FindAll() ([]Task, error) {
 	return tasks, err
 }
 
-func (r *repository) FindByID(ID uint) []Task {
-	var tasks []Task
-	//getTaskWithChildren(r.db, nil, &tasks)
-	var task Task
-	r.db.First(&task, 1)
-	tasks = append(tasks, task)
-	return tasks
+func (r *repository) FindByID(ID uint) (Task, error) {
+	var parentTaskWithChildren Task
+	err := r.db.Preload("Children").First(&parentTaskWithChildren, ID).Error
 
+	return parentTaskWithChildren, err
 }
 
 func (r *repository) Create(task Task) (Task, error) {
