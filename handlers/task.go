@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +28,7 @@ func RootHandler(c *gin.Context) {
 	})
 }
 
+// [METHOD:POST] Menambahkan data list.
 func (h *taskHandler) PostTasksHandler(c *gin.Context) {
 	var taskRequest task.AddTaskRequest
 	err := c.ShouldBindJSON((&taskRequest))
@@ -110,6 +114,20 @@ func (h *taskHandler) PostSubTaskByID(c *gin.Context) {
 	var subTaskRequest task.AddTaskRequest
 	err := c.ShouldBindJSON(&subTaskRequest)
 
+	if err != nil {
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+
+		return
+	}
+
 	StrID := c.Param("id")
 	id, err := strconv.ParseUint(StrID, 10, 64)
 
@@ -146,4 +164,62 @@ func (h *taskHandler) PostSubTaskByID(c *gin.Context) {
 		"data": task,
 	})
 
+}
+
+func (h *taskHandler) UploadFile(c *gin.Context) {
+	var reqtask task.Task
+	if err := c.ShouldBindJSON(&reqtask); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error})
+		return
+	}
+	// taskID, err := strconv.ParseUint(c.Request.FormValue("taskID"), 10, 64)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "invalid taskID"})
+	// 	return
+	// }
+
+	// //find task
+	// task, _ := h.taskService.FindByID(uint(taskID))
+	// if task == nil {
+	// 	c.JSON(http.StatusNotFound, gin.H{"errors": "Task id not found"})
+	// 	return
+	// }
+
+	//handle file upload
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	//Save the file
+	err = saveUploadedFile(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error,
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, "Ok")
+
+}
+
+func saveUploadedFile(file *multipart.FileHeader) error {
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+
+	defer src.Close()
+
+	dst, err := os.Create("uploads" + file.Filename)
+	if err != nil {
+		return err
+	}
+
+	defer dst.Close()
+
+	_, err = io.Copy(dst, src)
+	return err
 }

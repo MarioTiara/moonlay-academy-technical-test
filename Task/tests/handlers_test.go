@@ -1,16 +1,30 @@
 package tests
 
 import (
+	"net/http"
 	"net/http/httptest"
+	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
 	task "github.com/marioTiara/todolistwebapi/Task"
 	mockdb "github.com/marioTiara/todolistwebapi/Task/mock"
 	"github.com/marioTiara/todolistwebapi/utils"
+	"github.com/stretchr/testify/require"
 )
 
-func TestPostTasksHandler(c *gin.Context) {
+func TestPostTasksHandler(t *testing.T) {
 	taskReq := randomAddTaskRequest()
+	taskinput := task.Task{
+		Title:       taskReq.Title,
+		Descryption: taskReq.Descryption,
+	}
+
+	taskRepoResponse := task.Task{
+		ID:          12,
+		Title:       taskReq.Title,
+		Descryption: taskReq.Descryption,
+	}
 
 	testCases := []struct {
 		name          string
@@ -26,9 +40,36 @@ func TestPostTasksHandler(c *gin.Context) {
 				"file_name":   taskReq.FileName,
 			},
 			buildStubs: func(repo *mockdb.MockRepository) {
-				repo.EXPECT().Create()
+				repo.EXPECT().Create(gomock.Eq(taskinput)).Times(1).
+					Return(taskRepoResponse)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repo := mockdb.NewMockRepository(ctrl)
+			tc.buildStubs(repo)
+
+			// server:= ne
+			// //Marshal body data to JSON
+			// data, err:= json.Marshal(tc.body)
+			// require.NoError(t, err)
+
+			// url:="/v1/tasks"
+			// request, err:= http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+			// require.NoError(t,err)
+			// ser
+
+		})
 	}
 }
 

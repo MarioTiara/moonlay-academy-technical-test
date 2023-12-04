@@ -1,8 +1,12 @@
 package task
 
+import (
+	"github.com/marioTiara/todolistwebapi/storages"
+)
+
 type Service interface {
 	FindAll() ([]Task, error)
-	FindByID(ID uint) (Task, error)
+	FindByID(ID uint) (*Task, error)
 	CreateSubTask(parentID uint, request AddTaskRequest) (Task, error)
 	Create(request AddTaskRequest) (Task, error)
 	FilterTask(title, description string, page, limit int) ([]Task, error)
@@ -10,10 +14,11 @@ type Service interface {
 
 type service struct {
 	repository Repository
+	storage    storages.Storage
 }
 
-func NewService(repository Repository) *service {
-	return &service{repository}
+func NewService(repository Repository, storage storages.Storage) *service {
+	return &service{repository, storage}
 }
 
 func (s *service) FindAll() ([]Task, error) {
@@ -21,9 +26,9 @@ func (s *service) FindAll() ([]Task, error) {
 	return tasks, err
 }
 
-func (s *service) FindByID(ID uint) (Task, error) {
+func (s *service) FindByID(ID uint) (*Task, error) {
 	task, err := s.repository.FindByID(ID)
-	return task, err
+	return &task, err
 }
 
 func (s *service) Create(request AddTaskRequest) (Task, error) {
